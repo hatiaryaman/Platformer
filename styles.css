@@ -1,0 +1,10 @@
+body{
+    background-color: white;
+    padding: 0;
+}
+
+#board {
+    position: absolute;
+    right: calc(0%);
+    top: calc(0%)
+}
