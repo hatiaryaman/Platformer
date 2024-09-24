@@ -1,6 +1,6 @@
-const E = 100000000
+const E = 100000
 
-class Object extends Box{
+class Obj extends Box{
     constructor(x, y, width, height, color) {
         super(x, y, width, height, color)
 
@@ -9,82 +9,53 @@ class Object extends Box{
         ID += 1
 
         boardData.push(this.coordinates)
+        objects.push(this)
     }
 
-    collisionDown() {
-        var bottom = -1*E
-        
-        for (let i = 0; i < ID; i++) {
-            if (this.id != i) {
-                let a = this.coordinates
-                let b = boardData[i]
+    collideHelp(v) {
+        let a = this.coordinates
+        if (a[0].x < v.x && v.x < a[1].x && a[0].y < v.y && v.y < a[2].y) {
+            return true
+        }
+    }
 
-                if (((b[0].x < a[0].x) && (a[0].x < b[1].x)) || ((b[0].x < a[1].x) && (a[1].x < b[1].x)) || ((a[0].x < b[0].x) && (b[0].x < a[1].x)) || ((a[0].x < b[1].x) && (b[1].x < a[1].x))) {
-                    if (b[2].y <= a[0].y && b[2].y >= bottom) {
-                        bottom = b[2].y
-                    }
-                }
+    collide(other) {
+        let a = this.coordinates
+        let b = other.coordinates
+
+        for (let n of a) {
+            if (other.collideHelp(n)) {
+                return true
             }
         }
 
-        return bottom
-    }
-
-    collisionUp() {
-        var top = E
-        
-        for (let i = 0; i < ID; i++) {
-            if (this.id != i) {
-                let a = this.coordinates
-                let b = boardData[i]
-
-                if (((b[0].x < a[0].x) && (a[0].x < b[1].x)) || ((b[0].x < a[1].x) && (a[1].x < b[1].x)) || ((a[0].x < b[0].x) && (b[0].x < a[1].x)) || ((a[0].x < b[1].x) && (b[1].x < a[1].x))) {
-                    if (b[0].y >= a[2].y && b[0].y <= top) {
-                        top = b[0].y
-                    }
-                }
+        for (let n of b) {
+            if (this.collideHelp(n)) {
+                return true
             }
         }
 
-        return top
+        return false
     }
 
-    collisionLeft() {
-        var l = -1*E
-        
-        for (let i = 0; i < ID; i++) {
-            if (this.id != i) {
-                let a = this.coordinates
-                let b = boardData[i]
+    collisionMove(other) {
+        let l = (this.position.x + this.width/2) - (other.position.x - other.width/2)
+        let r = (other.position.x + other.width/2) - (this.position.x - this.width/2)
+        let u = (other.position.y + other.height/2) - (this.position.y - this.height/2)
+        let d = (this.position.y + this.height/2) - (other.position.y - other.height/2)
 
-                if (((b[0].y < a[0].y) && (a[0].y < b[2].y)) || ((b[0].y < a[2].y) && (a[2].y < b[2].y)) || ((a[0].y < b[0].y) && (b[0].y < a[2].y)) || ((a[0].y < b[2].y) && (b[2].y < a[2].y))) {
-                    if (b[1].x <= a[0].x && b[1].x >= l) {
-                        l = b[1].x
-                    }
-                }
-            }
+        let m = Math.min(l, r, d, u)
+        if (m == l) {
+            return [new Vector(-1*l, 0), 0]
+        } else if (m == r) {
+            return [new Vector(r, 0), 0]
+        } else if (m == d) {
+            return [new Vector(0, -1*d), 1]
+        } else if (m == u){
+            return [new Vector(0, u), 2]
+        } else {
+            return [new Vector(0,0), 3]
         }
-
-        return l
-    }
-
-    collisionRight() {
-        var r = E
-        
-        for (let i = 0; i < ID; i++) {
-            if (this.id != i) {
-                let a = this.coordinates
-                let b = boardData[i]
-
-                if (((b[0].y < a[0].y) && (a[0].y < b[2].y)) || ((b[0].y < a[2].y) && (a[2].y < b[2].y)) || ((a[0].y < b[0].y) && (b[0].y < a[2].y)) || ((a[0].y < b[2].y) && (b[2].y < a[2].y))) {
-                    if (b[0].x >= a[1].x && b[0].x <= r) {
-                        r = b[0].x
-                    }
-                }
-            }
-        }
-
-        return r
     }
 
     updateCoordinates() {
@@ -99,5 +70,13 @@ class Object extends Box{
 
         this.coordinates[3].x = this.position.x - this.width/2
         this.coordinates[3].y = this.position.y + this.height/2
+    }
+
+    drawReference(p) {
+        ctx.fillStyle = this.color
+        ctx.strokeStyle = this.color
+
+        ctx.fillRect(board.width/2 + this.position.x - this.width/2 - p.position.x + camx, board.height/2 - this.position.y - this.height/2 + p.position.y + camy, this.width, this.height)
+        ctx.strokeRect(board.width/2 + this.position.x - this.width/2 - p.position.x + camx, board.height/2 - this.position.y - this.height/2 + p.position.y + camy, this.width, this.height)
     }
 }
