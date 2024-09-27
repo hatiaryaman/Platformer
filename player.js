@@ -77,8 +77,32 @@ class Player extends Obj{
         this.updateCoordinates()
 
 
-        // collision
+        // check collision
         let count = 0;
+        for (let i = 0; i < ID; i++) {
+            if (this.id != i) {
+                if (this.collide(objects[i])) {
+                    count += 1
+                }
+            }
+        }
+        if (count == 0) {
+            if(up && this.airjump && this.doubleTap) {
+                this.velocity.y = Math.min(Math.max(40, this.velocity.y+40), 50)
+                console.log(this.velocity.y)
+                this.airjump = false
+            }
+
+            if(down == 1 && this.ddash == 1){
+                this.velocity.y = -200
+                this.ddash = 0
+            }
+            if (down == 0) {
+                this.ddash = 1
+            }
+        }
+
+        // collision
         for (let i = 0; i < ID; i++) {
             if (this.id != i) {
                 if (this.collide(objects[i])) {
@@ -96,6 +120,7 @@ class Player extends Obj{
                     }
 
                     if (collideInfo[1] == 2) {
+                        //console.log("hi")
                         if (!up) {
                             this.jump = true
                             this.doubleTap = false
@@ -113,20 +138,7 @@ class Player extends Obj{
             }
         }
 
-        if (count == 0) {
-            if(up && this.airjump && this.doubleTap) {
-                this.velocity.y = 40
-                this.airjump = false
-            }
-
-            if(down == 1 && this.ddash == 1){
-                this.velocity.y = -200
-                this.ddash = 0
-            }
-            if (down == 0) {
-                this.ddash = 1
-            }
-        }
+        //console.log(this.airjump)
     }
 
     drawReference(p=this, c=this.color) {
