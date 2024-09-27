@@ -1,7 +1,4 @@
-var physics = 1
-document.addEventListener("visibilitychange", (e)=>{
-    physics = 1 - physics
-})
+
 // board setup
 const board = document.getElementById('board');
 const ctx = board.getContext('2d');
@@ -36,6 +33,8 @@ new Obj(0, -1 * board.height / 2 - 50, board.width + 100000, 100, "white")
 new Obj(-100, -1*board.height/2 + 25, 100, 50, "white")
 new Obj(-125, -1*board.height/2 + 75, 50, 50, "white")
 new Obj(-100, -1*board.height/2 + 125, 100, 50, "white")
+
+new Obj(-100, -1*board.height/2 + 325, 100, 50, "white")
 
 // editing    
 document.addEventListener("mousedown", function (e) {
@@ -76,11 +75,9 @@ function run() {
 
     // framerate
     var t = Date.now()
-    dt = physics*(t - time) / 50
+    dt = (t - time) / 50
     time = t
 
-    console.log(1/dt)
-    //Promise.all([new Promise((res)=>{requestAnimationFrame (res);}), new Promise((res)=>{setTimeout(res, 16)})]).then(run);
     requestAnimationFrame (run)
 }
 
